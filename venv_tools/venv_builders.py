@@ -48,21 +48,20 @@ try:
             self.with_pip = with_pip
         def post_setup(self, context):
             if self.with_pip:
-                raise NotImplemented
-                #with tempfile.TemporaryDirectory() as t:
-                #    with open(PIP_FILE, "wb") as f:
-                #        r = requests.get(PIP_URL)
-                #        r.raise_for_status() # dunno what state this leaves the venv in...
-                #        f.write(r.content)
-                #    try:
-                #        subprocess.check_output(
-                #            [context.env_exe, os.path.join(t, PIP_FILE)],
-                #            stderr=subprocess.STDOUT
-                #            )
-                #    except subprocess.CalledProcessError as e:
-                #        print(PIP_ERROR.format(
-                #            error_code=e.returncode,
-                #            error_output=e.output
-                #            ))
+                with tempfile.TemporaryDirectory() as t:
+                    with open(PIP_FILE, "wb") as f:
+                        r = requests.get(PIP_URL)
+                        r.raise_for_status() # dunno what state this leaves the venv in...
+                        f.write(r.content)
+                    try:
+                        subprocess.check_output(
+                            [context.env_exe, os.path.join(t, PIP_FILE)],
+                            stderr=subprocess.STDOUT
+                            )
+                    except subprocess.CalledProcessError as e:
+                        print(PIP_ERROR.format(
+                            error_code=e.returncode,
+                            error_output=e.output
+                            ))
 except ImportError as e:
     pass
