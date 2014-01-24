@@ -10,6 +10,8 @@ import venv_tools.utils as utils
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 
 class Venv(object):
+    """
+    """
     def __init__(self, env_dir, venv_builder=None, **kwargs):
         self.env_dir = env_dir
         self._venv_builder = venv_builder
@@ -40,6 +42,8 @@ class Venv(object):
             os.environ["VIRTUAL_ENV"] = self._old_venv
 
 class TemporaryVenv(object):
+    """
+    """
     def __init__(self, venv_builder=None, use_virtualenv=False, **kwargs):
         self._kwargs = kwargs
         self._venv_builder = venv_builder or utils.get_default_venv_builder(use_virtualenv)
