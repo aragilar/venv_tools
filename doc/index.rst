@@ -9,9 +9,12 @@ using venvs from Python.
 
 .. code-block :: python
 
-    with venv_tools.TemporaryVenv(path_to_venv):
-        subprocess.call(["pip", "install", "-r", "requirements.txt"])
-        subprocess.call(["python", "-m", "profile", "project"])
+    from venv_tools import TemporaryVenv, Venv
+    from subprocess import call # or similar
+
+    with TemporaryVenv() as env_dir, Venv(env_dir):
+        call(["pip", "install", "-r", "requirements.txt"])
+        call(["python", "-m", "profile", "project"])
 
 Contents:
 
