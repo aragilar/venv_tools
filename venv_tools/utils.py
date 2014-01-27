@@ -36,8 +36,10 @@ def pathappend(dir, path):
     pathremove(dir, path)
     os.environ[path] = os.environ[path] + os.pathsep + dir
 
-def get_default_venv_builder(use_virtualenv):
-    if use_virtualenv:
+def get_default_venv_builder(use_virtualenv, path_to_python_exe):
+    if path_to_python_exe:
+        return venv_builders.VirtualenvBuilder
+    elif use_virtualenv:
         return venv_builders.VirtualenvBuilder
     try:
         import venv

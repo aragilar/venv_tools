@@ -11,6 +11,7 @@ BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 
 class Venv(object):
     """
+
     """
     def __init__(self, env_dir, venv_builder=None, **kwargs):
         self.env_dir = env_dir
@@ -44,13 +45,23 @@ class Venv(object):
 class TemporaryVenv(object):
     """
     """
-    def __init__(self, venv_builder=None, use_virtualenv=False, **kwargs):
+    def __init__(
+            self,
+            venv_builder=None,
+            use_virtualenv=False,
+            path_to_python_exe=None,
+            **kwargs
+            ):
         self._kwargs = kwargs
-        self._venv_builder = venv_builder or utils.get_default_venv_builder(use_virtualenv)
+        self._venv_builder = (venv_builder or
+            utils.get_default_venv_builder(use_virtualenv, path_to_python_exe))
+        self._path_to_python_exe = path_to_python_exe
         self._kwargs["clear"] = True # needed for venv which wants to create dir
 
     def __enter__(self):
         self.env_dir = tempfile.mkdtemp()
+        if self._path_to_python_exe:
+            self._kwargs["path_to_python_exe"] = self._path_to_python_exe
         venv = self._venv_builder(**self._kwargs)
         venv.create(self.env_dir)
         self._opened_venv = Venv(self.env_dir)
@@ -60,3 +71,5 @@ class TemporaryVenv(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self._opened_venv.__exit__(exc_type, exc_value, traceback)
         shutil.rmtree(self.env_dir)
+
+__all__ = [Venv, TemporaryVenv]
