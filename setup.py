@@ -7,8 +7,8 @@ setuptools.setup(
         install_requires = ["requests"]
         author = "James Tocknell",
         author_email = "aragilar@gmail.com",
-        description = "A bunch of tools for using venvs (and virtualenvs) from python",
+        description = "A bunch of tools for using venvs (and virtualenvs) from python.",
         license = "BSD",
         keywords = "virtualenv venv",
-        url = ""
+        url = "http://venv_tools.rtfd.org"
 )

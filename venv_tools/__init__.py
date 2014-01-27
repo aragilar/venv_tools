@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+venv_tools
+~~~~~~~~~~
+
+A bunch of tools for using venvs (and virtualenvs) from python.
+
+:copyright: (c) 2014 by James Tocknell.
+:license: BSD, see LICENSE for more details.
+"""
 import os
 import os.path
 import sys
@@ -8,6 +18,7 @@ import warnings
 import venv_tools.utils as utils
 
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
+__version__ = "0.1"
 
 class Venv(object):
     """
