@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+"""
+venv_tools._venv_builders
+~~~~~~~~~~
+
+EnvBuilder replacement classes for where EnvBuilder isn't available.
+
+:copyright: (c) 2014 by James Tocknell.
+:license: BSD, see LICENSE for more details.
+"""
+from __future__ import absolute_import, print_function
+
 import os
 import sys
 import shlex

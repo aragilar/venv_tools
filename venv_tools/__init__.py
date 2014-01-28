@@ -8,6 +8,8 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
+from __future__ import absolute_import, print_function
+
 import os
 import os.path
 import sys
@@ -15,7 +17,7 @@ import tempfile
 import shutil
 import warnings
 
-import venv_tools.utils as utils
+import ._utils as utils
 
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 __version__ = "0.1"

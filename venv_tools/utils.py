@@ -1,6 +1,19 @@
+# -*- coding: utf-8 -*-
+"""
+venv_tools._utils
+~~~~~~~~~~
+
+Useful internal functions
+
+:copyright: (c) 2014 by James Tocknell.
+:license: BSD, see LICENSE for more details.
+"""
+from __future__ import absolute_import, print_function
+
 import os
 import sys
-import venv_tools.venv_builders as venv_builders
+
+import ._venv_builders as venv_builders
 
 def pathremove(dir, path):
     """
@@ -37,6 +50,10 @@ def pathappend(dir, path):
     os.environ[path] = os.environ[path] + os.pathsep + dir
 
 def get_default_venv_builder(use_virtualenv, path_to_python_exe):
+    """
+    Given `use_virtualenv` and `path_to_python_exe`, returns a venv builder that
+    will satisfy the requirements.
+    """
     if path_to_python_exe:
         return venv_builders.VirtualenvBuilder
     elif use_virtualenv:
