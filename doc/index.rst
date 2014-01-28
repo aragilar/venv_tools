@@ -19,10 +19,10 @@ using venvs from Python.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   Usage
-   API
+    Usage
+    API
 
 
 

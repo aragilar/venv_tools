@@ -94,7 +94,9 @@ class TemporaryVenv(object):
         this should not be relied upon. A warning will be raised if it is
         detected that this is running inside a venv.
 
-    :param str env_dir: The absolute path to the venv.
+    :param str path_to_python_exe: The absolute path to the python executable.
+    :param bool use_virtualenv: Use virtualenv instead of the default to create
+        the venv.
     :param venv_builder: An object which creates a venv. It must define a method
         `create` which takes one argument, `env_dir`, and creates a venv at that
         path. Any additional keywords passed to `Venv` will be passed to the
