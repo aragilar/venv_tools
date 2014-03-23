@@ -13,7 +13,7 @@ from __future__ import absolute_import, print_function
 import os
 import sys
 
-import ._venv_builders as venv_builders
+from ._venv_builders import VenvBuilderWithPip, VirtualenvBuilder
 
 def pathremove(dir, path):
     """
@@ -55,13 +55,13 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
     will satisfy the requirements.
     """
     if path_to_python_exe:
-        return venv_builders.VirtualenvBuilder
+        return VirtualenvBuilder
     elif use_virtualenv:
-        return venv_builders.VirtualenvBuilder
+        return VirtualenvBuilder
     try:
         import venv
         if sys.version_info[0:2] == (3, 3):
-            return venv_builders.VenvBuilderWithPip
+            return VenvBuilderWithPip
         return venv.EnvBuilder
     except ImportError as e:
-        return venv_builders.VirtualenvBuilder
+        return VirtualenvBuilder

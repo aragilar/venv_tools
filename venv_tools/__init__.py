@@ -17,7 +17,7 @@ import tempfile
 import shutil
 import warnings
 
-import ._utils as utils
+from ._utils import pathprepend, get_default_venv_builder
 
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 __version__ = "0.1"
@@ -59,7 +59,7 @@ class Venv(object):
         if self._venv_builder:
             venv = self._venv_builder(**self._kwargs)
             venv.create(self.env_dir)
-        utils.pathprepend(os.path.join(self.env_dir, BIN_DIR), "PATH")
+        pathprepend(os.path.join(self.env_dir, BIN_DIR), "PATH")
         if self._python_home is not None:
             os.environ.pop("PYTHONHOME")
         os.environ["VIRTUAL_ENV"] = self.env_dir
@@ -115,7 +115,7 @@ class TemporaryVenv(object):
             ):
         self._kwargs = kwargs
         self._venv_builder = (venv_builder or
-            utils.get_default_venv_builder(use_virtualenv, path_to_python_exe))
+            get_default_venv_builder(use_virtualenv, path_to_python_exe))
         self._path_to_python_exe = path_to_python_exe
         self._kwargs["clear"] = True # needed for venv which wants to create dir
 
