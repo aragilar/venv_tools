@@ -16,8 +16,6 @@ import shlex
 import subprocess
 import tempfile
 
-import requests
-
 VIRTUALENV_COMMAND = "virtualenv {options} {env_dir}"
 
 class VirtualenvBuilder(object):
