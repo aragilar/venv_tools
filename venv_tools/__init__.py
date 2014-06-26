@@ -8,7 +8,7 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 
 import os
 import os.path

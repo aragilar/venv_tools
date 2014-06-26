@@ -8,7 +8,7 @@ EnvBuilder replacement classes for where EnvBuilder isn't available.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 
 import os
 import sys
@@ -19,9 +19,6 @@ import tempfile
 import requests
 
 VIRTUALENV_COMMAND = "virtualenv {options} {env_dir}"
-PIP_URL = "https://raw.github.com/pypa/pip/master/contrib/get-pip.py"
-PIP_FILE = "get_pip.py"
-PIP_ERROR = "get_pip.py failed: Error {error_code}\n{error_output}"
 
 class VirtualenvBuilder(object):
     def __init__(self, system_site_packages=False, clear=False, with_pip=False, **kwargs):
@@ -45,35 +42,3 @@ class VirtualenvBuilder(object):
             )),
             stderr=subprocess.STDOUT
             )
-
-try:
-    import venv
-
-    class VenvBuilderWithPip(venv.EnvBuilder):
-        def __init__(self, system_site_packages=False, clear=False, symlinks=False, upgrade=False, with_pip=False):
-            super().__init__(
-                    system_site_packages=system_site_packages,
-                    clear=clear,
-                    symlinks=symlinks,
-                    upgrade=upgrade
-                )
-            self.with_pip = with_pip
-        def post_setup(self, context):
-            if self.with_pip:
-                with tempfile.TemporaryDirectory() as t:
-                    with open(PIP_FILE, "wb") as f:
-                        r = requests.get(PIP_URL)
-                        r.raise_for_status() # dunno what state this leaves the venv in...
-                        f.write(r.content)
-                    try:
-                        subprocess.check_output(
-                            [context.env_exe, os.path.join(t, PIP_FILE)],
-                            stderr=subprocess.STDOUT
-                            )
-                    except subprocess.CalledProcessError as e:
-                        print(PIP_ERROR.format(
-                            error_code=e.returncode,
-                            error_output=e.output
-                            ))
-except ImportError as e:
-    pass

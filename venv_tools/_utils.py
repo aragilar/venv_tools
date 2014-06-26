@@ -8,12 +8,12 @@ Useful internal functions
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 
 import os
 import sys
 
-from ._venv_builders import VenvBuilderWithPip, VirtualenvBuilder
+from ._venv_builders import VirtualenvBuilder
 
 def pathremove(dir, path):
     """
@@ -61,7 +61,7 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
     try:
         import venv
         if sys.version_info[0:2] == (3, 3):
-            return VenvBuilderWithPip
+            return VirtualenvBuilder
         return venv.EnvBuilder
     except ImportError as e:
         return VirtualenvBuilder
