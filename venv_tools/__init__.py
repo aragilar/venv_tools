@@ -17,9 +17,8 @@ import tempfile
 import shutil
 import warnings
 
-from ._utils import pathprepend, get_default_venv_builder, is_venv
+from ._utils import pathprepend, get_default_venv_builder, is_venv, BIN_DIR
 
-BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 __version__ = "0.1"
 
 class Venv(object):
