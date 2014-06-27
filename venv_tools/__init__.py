@@ -17,7 +17,7 @@ import tempfile
 import shutil
 import warnings
 
-from ._utils import pathprepend, get_default_venv_builder
+from ._utils import pathprepend, get_default_venv_builder, is_venv
 
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 __version__ = "0.1"
@@ -45,11 +45,15 @@ class Venv(object):
     :type venv_builder: `venv.EnvBuilder or similar`
     """
     def __init__(self, env_dir, venv_builder=None, **kwargs):
+
         self.env_dir = env_dir
         self._venv_builder = venv_builder
         self._kwargs = kwargs
 
     def __enter__(self):
+        if not is_venv(self.env_dir):
+            raise RuntimeError(
+                    "{} is not a venv/virtualenv.".format(self.env_dir))
         self._old_venv = os.environ.get("VIRTUAL_ENV", None)
         if self._old_venv is not None:
             warn_str = "Inside virtualenv {virtualenv}.".format(virtualenv=self._old_venv)

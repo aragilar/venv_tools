@@ -12,8 +12,23 @@ from __future__ import absolute_import
 
 import os
 import sys
+import os.path as pth
 
+from . import BIN_DIR
 from ._venv_builders import VirtualenvBuilder
+
+PYVENV_FILENAME = "pyvenv.cfg"
+ACTIVATE_FILENAMES = [
+    "activate",
+    "activate.csh",
+    "activate.fish",
+    "activate_this.py",
+    "activate.bat",
+    "activate.ps1",
+]
+
+# only use venv for py3.4 and higher, as py3.3 venv lacks pip
+PEP_420_SUPPORTED = True if sys.version_info[:2] >= (3,4)
 
 def pathremove(dir, path):
     """
@@ -65,3 +80,25 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
         return venv.EnvBuilder
     except ImportError as e:
         return VirtualenvBuilder
+
+def is_venv(path):
+    """
+    Checks whether `path` is a virtualenv/venv.
+    """
+    if pth.exists(pth.join(path, PYVENV_FILENAME)):
+        # we have a PEP 405 venv (probably)
+        with open(pth.join(path, PYVENV_FILENAME)) as f:
+            for line in f:
+                key = line.split("=")[0].strip()
+                if key == "home": # home key required by PEP
+                    return True
+    elif pth.exists(pth.join(path, BIN_DIR, "python")):
+        # we might have a virtualenv (/usr would pass the above test)
+        activate_exists = any(
+                pth.exists(pth.join(path, BIN_DIR, f)
+                    for f in ACTIVATE_FILENAMES)
+        )
+        if activate_exists:
+            return True
+    else:
+        return False
