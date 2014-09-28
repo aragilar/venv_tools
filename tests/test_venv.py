@@ -5,7 +5,7 @@ import tempfile
 import subprocess
 
 if sys.version_info[:2] < (2,7):
-    import unittest2
+    import unittest2 as unittest
 else:
     import unittest
 
@@ -98,3 +98,8 @@ class TestVenvActivation(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.venv)
+
+class TestTemporaryVenv(unittest.TestCase):
+    def test_default_via_is_venv(self):
+        with TemporaryVenv() as envdir:
+            self.assertTrue(is_venv(envdir))
