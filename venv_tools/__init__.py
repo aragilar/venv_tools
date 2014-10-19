@@ -92,6 +92,12 @@ class TemporaryVenv(object):
         tool that supports using a specific python executable (most likely
         virtualenv).
 
+    .. note::
+        If you plan on using pip, you need the argument `with_pip`, as both
+        `EnvBuilder` in the standard library, and the virtualenv builder
+        included in `venv_tools` (to try to present a similar interface to
+        `EnvBuilder`) default to not installing pip.
+
     .. warning::
         Creating or activating a venv inside a venv can be "interesting", with
         the results varying between different python versions (and different
