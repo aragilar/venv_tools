@@ -21,7 +21,7 @@ def find_version(*file_paths):
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
-with open('README') as f:
+with open('README.rst') as f:
     long_description = f.read()
 
 deps = ["requests"]
