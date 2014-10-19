@@ -14,6 +14,7 @@ from venv_tools._utils import is_venv
 
 VENV_PYTHON_TEST_CODE = "from __future__ import print_function; import sys; print(sys.prefix)"
 DEVNULL = open(os.devnull, "w")
+SYS_TEST_CODE = "from __future__ import print_function; import sys; print(sys.version_info)"
 
 def pyvenv_exists():
     try:
@@ -93,8 +94,8 @@ class TestVenvActivation(unittest.TestCase):
         with Venv(self.venv):
             internal_prefix = subprocess.check_output([
                 "python", "-c", VENV_PYTHON_TEST_CODE
-            ]).strip()
-            self.assertEqual(internal_prefix.decode("utf8"), self.venv)
+            ], universal_newlines=True).strip()
+            self.assertEqual(internal_prefix, self.venv)
 
     def tearDown(self):
         shutil.rmtree(self.venv)
@@ -107,3 +108,12 @@ class TestTemporaryVenv(unittest.TestCase):
         with TemporaryVenv() as envdir:
             with Venv(envdir):
                 self.assertTrue(True)
+    def test_default_via_sys(self):
+        with TemporaryVenv() as envdir:
+            with Venv(envdir):
+                self.assertEqual(
+                    str(sys.version_info),
+                    str(subprocess.check_output([
+                        "python", "-c", SYS_TEST_CODE
+                    ], universal_newlines=True).strip())
+                )
