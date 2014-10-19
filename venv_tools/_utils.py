@@ -78,9 +78,23 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
     except ImportError as e:
         return VirtualenvBuilder
 
-def is_venv(path):
+def is_virtualenv(path):
     """
-    Checks whether `path` is a virtualenv/venv.
+    Checks whether `path` is a virtualenv.
+    """
+    if pth.exists(pth.join(path, BIN_DIR, "python")):
+        # we might have a virtualenv (/usr would pass the above test)
+        activate_exists = any(
+                pth.exists(pth.join(path, BIN_DIR, f))
+                    for f in ACTIVATE_FILENAMES
+        )
+        if activate_exists and not is_pep_405_venv(path):
+            return True
+    return False
+
+def is_pep_405_venv(path):
+    """
+    Checks whether `path` is a PEP 405 venv.
     """
     if pth.exists(pth.join(path, PYVENV_FILENAME)):
         # we have a PEP 405 venv (probably)
@@ -89,13 +103,10 @@ def is_venv(path):
                 key = line.split("=")[0].strip()
                 if key == "home": # home key required by PEP
                     return True
-    elif pth.exists(pth.join(path, BIN_DIR, "python")):
-        # we might have a virtualenv (/usr would pass the above test)
-        activate_exists = any(
-                pth.exists(pth.join(path, BIN_DIR, f))
-                    for f in ACTIVATE_FILENAMES
-        )
-        if activate_exists:
-            return True
-    else:
-        return False
+    return False
+
+def is_venv(path):
+    """
+    Checks whether `path` is a virtualenv/venv.
+    """
+    return is_pep_405_venv(path) or is_virtualenv(path)

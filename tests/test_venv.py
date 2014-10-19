@@ -10,7 +10,7 @@ else:
     import unittest
 
 from venv_tools import Venv, TemporaryVenv
-from venv_tools._utils import is_venv
+from venv_tools._utils import is_venv, is_virtualenv
 
 VENV_PYTHON_TEST_CODE = "from __future__ import print_function; import sys; print(sys.prefix)"
 DEVNULL = open(os.devnull, "w")
@@ -110,6 +110,22 @@ class TestTemporaryVenv(unittest.TestCase):
                 self.assertTrue(True)
     def test_default_via_sys(self):
         with TemporaryVenv() as envdir:
+            with Venv(envdir):
+                self.assertEqual(
+                    str(sys.version_info),
+                    str(subprocess.check_output([
+                        "python", "-c", SYS_TEST_CODE
+                    ], universal_newlines=True).strip())
+                )
+    def test_virtualenv_via_is_venv(self):
+        with TemporaryVenv(use_virtualenv=True) as envdir:
+            self.assertTrue(is_virtualenv(envdir))
+    def test_virtualenv_via_activation(self):
+        with TemporaryVenv(use_virtualenv=True) as envdir:
+            with Venv(envdir):
+                self.assertTrue(True)
+    def test_virtualenv_via_sys(self):
+        with TemporaryVenv(use_virtualenv=True) as envdir:
             with Venv(envdir):
                 self.assertEqual(
                     str(sys.version_info),
