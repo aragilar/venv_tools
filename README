@@ -1,2 +1,5 @@
 Installable via pip.
+
 Docs at http://venv_tools.rtfd.org.
+
+[![Build Status](https://drone.io/bitbucket.org/aragilar/venv_tools/status.png)](https://drone.io/bitbucket.org/aragilar/venv_tools/latest)
