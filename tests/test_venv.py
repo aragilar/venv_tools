@@ -103,3 +103,7 @@ class TestTemporaryVenv(unittest.TestCase):
     def test_default_via_is_venv(self):
         with TemporaryVenv() as envdir:
             self.assertTrue(is_venv(envdir))
+    def test_default_via_activation(self):
+        with TemporaryVenv() as envdir:
+            with Venv(envdir):
+                self.assertTrue(True)
