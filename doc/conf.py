@@ -58,7 +58,7 @@ copyright = u'2014, James Tocknell'
 #
 # The short X.Y version.
 import venv_tools
-version = venv_tools.__version__.split(".")[0:2]
+version = '.'.join(venv_tools.__version__.split(".")[0:2])
 # The full version, including alpha/beta/rc tags.
 release = venv_tools.__version__
 

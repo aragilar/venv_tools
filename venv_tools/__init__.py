@@ -12,7 +12,6 @@ from __future__ import absolute_import
 
 import os
 import os.path
-import sys
 import tempfile
 import shutil
 import warnings
@@ -20,6 +19,7 @@ import warnings
 from ._utils import pathprepend, get_default_venv_builder, is_venv, BIN_DIR
 
 __version__ = "0.1"
+
 
 class Venv(object):
     """
@@ -52,7 +52,7 @@ class Venv(object):
     def __enter__(self):
         if not is_venv(self.env_dir):
             raise RuntimeError(
-                    "{} is not a venv/virtualenv.".format(self.env_dir))
+                "{} is not a venv/virtualenv.".format(self.env_dir))
         self._old_venv = os.environ.get("VIRTUAL_ENV", None)
         if self._old_venv is not None:
             warn_str = "Inside virtualenv {virtualenv}.".format(virtualenv=self._old_venv)
@@ -75,6 +75,7 @@ class Venv(object):
         os.environ.pop("VIRTUAL_ENV")
         if self._old_venv is not None:
             os.environ["VIRTUAL_ENV"] = self._old_venv
+
 
 class TemporaryVenv(object):
     """
@@ -123,10 +124,12 @@ class TemporaryVenv(object):
             **kwargs
             ):
         self._kwargs = kwargs
-        self._venv_builder = (venv_builder or
-            get_default_venv_builder(use_virtualenv, path_to_python_exe))
+        self._venv_builder = (
+            venv_builder or
+            get_default_venv_builder(use_virtualenv, path_to_python_exe)
+        )
         self._path_to_python_exe = path_to_python_exe
-        self._kwargs["clear"] = True # needed for venv which wants to create dir
+        self._kwargs["clear"] = True  # needed for venv which wants to create dir
 
     def __enter__(self):
         self.env_dir = tempfile.mkdtemp()
@@ -138,4 +141,3 @@ class TemporaryVenv(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         shutil.rmtree(self.env_dir)
-

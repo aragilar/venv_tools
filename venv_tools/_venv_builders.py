@@ -10,16 +10,15 @@ EnvBuilder replacement classes for where EnvBuilder isn't available.
 """
 from __future__ import absolute_import
 
-import os
 import sys
 import shlex
 import subprocess
-import tempfile
 import logging
 
 log = logging.getLogger(__name__)
 
 VIRTUALENV_COMMAND = "virtualenv {options} {env_dir}"
+
 
 class VirtualenvBuilder(object):
     def __init__(
@@ -31,6 +30,7 @@ class VirtualenvBuilder(object):
         self.kwargs = kwargs
         self.with_pip = with_pip
         self.path_to_python_exe = path_to_python_exe or sys.executable
+
     def create(self, env_dir):
         options = ""
         options += " --python {python} ".format(python=self.path_to_python_exe)
