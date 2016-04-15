@@ -10,9 +10,10 @@ Useful internal functions
 """
 from __future__ import absolute_import
 
+import io
 import os
-import sys
 import os.path as pth
+import sys
 
 from ._venv_builders import VirtualenvBuilder
 

@@ -14,12 +14,15 @@ import os
 import os.path
 import tempfile
 import shutil
+from shlex import split
+import subprocess
 import warnings
 
 from ._utils import pathprepend, get_default_venv_builder, is_venv, BIN_DIR
 
 __version__ = "0.1"
 
+DEFAULT_INSTALL_COMMAND = "{python} -m pip install {module}"
 
 class Venv(object):
     """
@@ -48,6 +51,7 @@ class Venv(object):
         self.env_dir = env_dir
         self._venv_builder = venv_builder
         self._kwargs = kwargs
+        self._install_command = DEFAULT_INSTALL_COMMAND
 
     def __enter__(self):
         if not is_venv(self.env_dir):
@@ -75,6 +79,40 @@ class Venv(object):
         os.environ.pop("VIRTUAL_ENV")
         if self._old_venv is not None:
             os.environ["VIRTUAL_ENV"] = self._old_venv
+
+    @property
+    def python_exe(self):
+        return self._python_exe
+
+    @property
+    def install_command(self):
+        return self._install_command
+
+    @install_command.setter
+    def install_command(self, new_cmd):
+        self._install_command = new_cmd
+
+    def call_python_file(self, file):
+        return subprocess.check_output(
+            [self.python_exe, file], stderr=subprocess.STDOUT
+        )
+
+    def call_python_module(self, module_name, *args):
+        return subprocess.check_output(
+            [self.python_exe, '-m', module_name].append(args),
+            stderr=subprocess.STDOUT
+        )
+
+    def call_python_code(self, code):
+        return subprocess.check_output(
+            [self.python_exe, '-c', code], stderr=subprocess.STDOUT
+        )
+
+    def install_module(self, module):
+        cmd = split(
+            self.install_command.format(python=self.python_exe, module=module)
+        )
+        return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 
 
 class TemporaryVenv(object):
