@@ -10,7 +10,6 @@ Useful internal functions
 """
 from __future__ import absolute_import
 
-import io
 import os
 import os.path as pth
 import sys
@@ -18,6 +17,7 @@ import sys
 from ._venv_builders import VirtualenvBuilder
 
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
+PYTHON_FILENAME = "python.exe" if sys.platform == 'win32' else "python"
 PYVENV_FILENAME = "pyvenv.cfg"
 ACTIVATE_FILENAMES = [
     "activate",
@@ -29,41 +29,41 @@ ACTIVATE_FILENAMES = [
 ]
 
 
-def pathremove(dir, path):
+def pathremove(dirname, path):
     """
-    Remove `dir` from path `path`.
+    Remove `dirname` from path `path`.
     e.g. to remove `/bin` from `$PATH`
     >>> pathremove('/bin', 'PATH')
 
-    Based on http://hg.flowblok.id.au/dotfiles/src/85661d53e226dfe1e79b125942594a4275d8ed75/.shell/env_functions?at=flowblok
+    Based on shell function by Peter Ward
     """
     os.environ[path] = os.pathsep.join(
-        p for p in os.environ[path].split(os.pathsep) if p != dir
+        p for p in os.environ[path].split(os.pathsep) if p != dirname
     )
 
 
-def pathprepend(dir, path):
+def pathprepend(dirname, path):
     """
-    Prepend `dir` ro path `path`.
+    Prepend `dirname` ro path `path`.
     e.g. to prepend `/bin` to `$PATH`
     >>> pathprepend('/bin', 'PATH')
 
-    Based on http://hg.flowblok.id.au/dotfiles/src/85661d53e226dfe1e79b125942594a4275d8ed75/.shell/env_functions?at=flowblok
+    Based on shell function by Peter Ward
     """
-    pathremove(dir, path)
-    os.environ[path] = dir + os.pathsep + os.environ[path]
+    pathremove(dirname, path)
+    os.environ[path] = dirname + os.pathsep + os.environ[path]
 
 
-def pathappend(dir, path):
+def pathappend(dirname, path):
     """
-    Append `dir` to path `path`.
+    Append `dirname` to path `path`.
     e.g. to append `/bin` to `$PATH`
     >>> pathappend('/bin', 'PATH')
 
-    Based on http://hg.flowblok.id.au/dotfiles/src/85661d53e226dfe1e79b125942594a4275d8ed75/.shell/env_functions?at=flowblok
+    Based on shell function by Peter Ward
     """
-    pathremove(dir, path)
-    os.environ[path] = os.environ[path] + os.pathsep + dir
+    pathremove(dirname, path)
+    os.environ[path] = os.environ[path] + os.pathsep + dirname
 
 
 def get_default_venv_builder(use_virtualenv, path_to_python_exe):

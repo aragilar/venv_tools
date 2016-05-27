@@ -18,11 +18,14 @@ from shlex import split
 import subprocess
 import warnings
 
-from ._utils import pathprepend, get_default_venv_builder, is_venv, BIN_DIR
+from ._utils import (
+    pathprepend, get_default_venv_builder, is_venv, BIN_DIR, PYTHON_FILENAME
+)
 
 __version__ = "0.1"
 
-DEFAULT_INSTALL_COMMAND = "{python} -m pip install {module}"
+DEFAULT_INSTALL_COMMAND = "{python} -m pip install {package}"
+
 
 class Venv(object):
     """
@@ -39,19 +42,22 @@ class Venv(object):
         detected that this is running inside a venv.
 
     :param str env_dir: The absolute path to the venv.
-    :param venv_builder: An object which creates a venv. It must define a method
-        `create` which takes one argument, `env_dir`, and creates a venv at that
-        path. Any additional keywords passed to `Venv` will be passed to the
-        object.
+    :param venv_builder: An object which creates a venv. It must define a
+        method `create` which takes one argument, `env_dir`, and creates a
+        venv at that path. Any additional keywords passed to `Venv` will be
+        passed to the object.
 
     :type venv_builder: `venv.EnvBuilder or similar`
     """
     def __init__(self, env_dir, venv_builder=None, **kwargs):
 
-        self.env_dir = env_dir
+        self._env_dir = env_dir
         self._venv_builder = venv_builder
         self._kwargs = kwargs
         self._install_command = DEFAULT_INSTALL_COMMAND
+        self._old_venv = None
+        self._python_home = None
+        self._old_path = None
 
     def __enter__(self):
         if not is_venv(self.env_dir):
@@ -59,7 +65,9 @@ class Venv(object):
                 "{} is not a venv/virtualenv.".format(self.env_dir))
         self._old_venv = os.environ.get("VIRTUAL_ENV", None)
         if self._old_venv is not None:
-            warn_str = "Inside virtualenv {virtualenv}.".format(virtualenv=self._old_venv)
+            warn_str = "Inside virtualenv {virtualenv}.".format(
+                virtualenv=self._old_venv
+            )
             warnings.warn(warn_str)
         self._old_path = os.environ["PATH"]
         self._python_home = os.environ.get("PYTHONHOME", None)
@@ -82,35 +90,66 @@ class Venv(object):
 
     @property
     def python_exe(self):
-        return self._python_exe
+        """
+        Path to python interpreter
+        """
+        return os.path.join(self.env_dir, BIN_DIR, PYTHON_FILENAME)
+
+    @property
+    def env_dir(self):
+        """
+        The path to the virtual environment
+        """
+        return self._env_dir
 
     @property
     def install_command(self):
+        """
+        The command to install a python package in the virtualenv. Must be a
+        format string with python and package.
+        """
         return self._install_command
 
     @install_command.setter
     def install_command(self, new_cmd):
         self._install_command = new_cmd
 
-    def call_python_file(self, file):
+    def call_python_file(self, filename):
+        """
+        Call a python file with the python interpreter associated with this
+        virtualenv.
+        """
         return subprocess.check_output(
-            [self.python_exe, file], stderr=subprocess.STDOUT
+            [self.python_exe, filename], stderr=subprocess.STDOUT
         )
 
     def call_python_module(self, module_name, *args):
+        """
+        Call a python module with the python interpreter associated with this
+        virtualenv.
+        """
         return subprocess.check_output(
             [self.python_exe, '-m', module_name].append(args),
             stderr=subprocess.STDOUT
         )
 
     def call_python_code(self, code):
+        """
+        Call some python code with the python interpreter associated with this
+        virtualenv.
+        """
         return subprocess.check_output(
             [self.python_exe, '-c', code], stderr=subprocess.STDOUT
         )
 
-    def install_module(self, module):
+    def install_package(self, package):
+        """
+        Install a python package into this virtualenv.
+        """
         cmd = split(
-            self.install_command.format(python=self.python_exe, module=module)
+            self.install_command.format(
+                python=self.python_exe, package=package
+            )
         )
         return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 
@@ -126,10 +165,10 @@ class TemporaryVenv(object):
     .. note::
         The tool used to create the venv depends on the arguments given.
         `venv_builder` overrules `use_virtualenv` which overrules the defaults.
-        If `path_to_python_exe` is given, then it is passed to the venv builder,
-        which is chosen as above with the addition that the default will be a
-        tool that supports using a specific python executable (most likely
-        virtualenv).
+        If `path_to_python_exe` is given, then it is passed to the venv
+        builder, which is chosen as above with the addition that the default
+        will be a tool that supports using a specific python executable (most
+        likely virtualenv).
 
     .. note::
         If you plan on using pip, you need the argument `with_pip`, as both
@@ -147,27 +186,27 @@ class TemporaryVenv(object):
     :param str path_to_python_exe: The absolute path to the python executable.
     :param bool use_virtualenv: Use virtualenv instead of the default to create
         the venv.
-    :param venv_builder: An object which creates a venv. It must define a method
-        `create` which takes one argument, `env_dir`, and creates a venv at that
-        path. Any additional keywords passed to `Venv` will be passed to the
-        object.
+    :param venv_builder: An object which creates a venv. It must define a
+        method `create` which takes one argument, `env_dir`, and creates a venv
+        at that path. Any additional keywords passed to `Venv` will be passed
+        to the object.
 
     :type venv_builder: `venv.EnvBuilder or similar`
     """
     def __init__(
-            self,
-            venv_builder=None,
-            use_virtualenv=False,
-            path_to_python_exe=None,
-            **kwargs
-            ):
+        self, venv_builder=None, use_virtualenv=False, path_to_python_exe=None,
+        **kwargs
+    ):
         self._kwargs = kwargs
         self._venv_builder = (
             venv_builder or
             get_default_venv_builder(use_virtualenv, path_to_python_exe)
         )
         self._path_to_python_exe = path_to_python_exe
-        self._kwargs["clear"] = True  # needed for venv which wants to create dir
+        self.env_dir = None
+
+        # needed for venv which wants to create dir
+        self._kwargs["clear"] = True
 
     def __enter__(self):
         self.env_dir = tempfile.mkdtemp()

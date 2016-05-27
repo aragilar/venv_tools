@@ -21,6 +21,7 @@ VIRTUALENV_COMMAND = "virtualenv {options} {env_dir}"
 
 
 class VirtualenvBuilder(object):
+    # pylint: disable=missing-docstring
     def __init__(
         self, system_site_packages=False, clear=False, with_pip=False,
         path_to_python_exe=None, **kwargs
@@ -32,6 +33,7 @@ class VirtualenvBuilder(object):
         self.path_to_python_exe = path_to_python_exe or sys.executable
 
     def create(self, env_dir):
+        # pylint: disable=missing-docstring
         options = ""
         options += " --python {python} ".format(python=self.path_to_python_exe)
         if self.system_site_packages:
