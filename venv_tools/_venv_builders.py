@@ -43,9 +43,8 @@ class VirtualenvBuilder(object):
         if not self.with_pip:
             options += " --no-setuptools --no-pip "
         log.debug("virtualenv options: {}".format(options))
-        subprocess.check_output(shlex.split(VIRTUALENV_COMMAND.format(
-            options=options,
-            env_dir=env_dir
-            )),
-            stderr=subprocess.STDOUT
-            )
+        subprocess.check_output(
+            shlex.split(VIRTUALENV_COMMAND.format(
+                options=options, env_dir=env_dir
+            )), stderr=subprocess.STDOUT
+        )

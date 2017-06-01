@@ -22,7 +22,10 @@ from ._utils import (
     pathprepend, get_default_venv_builder, is_venv, BIN_DIR, PYTHON_FILENAME
 )
 
-__version__ = "0.1"
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
+
 
 DEFAULT_INSTALL_COMMAND = "{python} -m pip install {package}"
 
