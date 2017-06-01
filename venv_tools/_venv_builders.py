@@ -8,8 +8,6 @@ EnvBuilder replacement classes for where EnvBuilder isn't available.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import
-
 import sys
 import shlex
 import subprocess

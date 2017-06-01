@@ -5,13 +5,11 @@ import versioneer
 with open('README.rst') as f:
     long_description = f.read()
 
-deps = ["requests", "virtualenv"]
-
 setuptools.setup(
     name="venv_tools",
     version = versioneer.get_version(),
     packages = setuptools.find_packages(),
-    install_requires = deps,
+    install_requires = ["virtualenv"],
     author = "James Tocknell",
     author_email = "aragilar@gmail.com",
     description = "A bunch of tools for using venvs (and virtualenvs) from python.",

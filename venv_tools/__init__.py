@@ -8,8 +8,6 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import
-
 import os
 import os.path
 import tempfile
@@ -19,7 +17,8 @@ import subprocess
 import warnings
 
 from ._utils import (
-    pathprepend, get_default_venv_builder, is_venv, BIN_DIR, PYTHON_FILENAME
+    pathprepend, get_default_venv_builder, is_venv, BIN_DIR, PYTHON_FILENAME,
+    abspath_python_exe,
 )
 
 from ._version import get_versions
@@ -186,7 +185,8 @@ class TemporaryVenv(object):
         this should not be relied upon. A warning will be raised if it is
         detected that this is running inside a venv.
 
-    :param str path_to_python_exe: The absolute path to the python executable.
+    :param str python_exe: The path to the python executable (relative or
+        absolute), or the name of the executable on the system path.
     :param bool use_virtualenv: Use virtualenv instead of the default to create
         the venv.
     :param venv_builder: An object which creates a venv. It must define a
@@ -197,9 +197,11 @@ class TemporaryVenv(object):
     :type venv_builder: `venv.EnvBuilder or similar`
     """
     def __init__(
-        self, venv_builder=None, use_virtualenv=False, path_to_python_exe=None,
+        self, venv_builder=None, use_virtualenv=False, python_exe=None,
         **kwargs
     ):
+        path_to_python_exe = abspath_python_exe(python_exe)
+
         self._kwargs = kwargs
         self._venv_builder = (
             venv_builder or

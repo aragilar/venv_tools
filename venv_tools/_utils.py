@@ -8,8 +8,6 @@ Useful internal functions
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
-from __future__ import absolute_import
-
 import os
 import os.path as pth
 import sys
@@ -118,3 +116,36 @@ def is_venv(path):
     Checks whether `path` is a virtualenv/venv.
     """
     return is_pep_405_venv(path) or is_virtualenv(path)
+
+
+def abspath_python_exe(python_exe):
+    """
+    Discover absolute path to python executable given by `python_exe`.
+    """
+    if python_exe is None:
+        return sys.executable
+    full_path = pth.abspath(python_exe)
+    if is_executable(full_path):
+        return full_path
+    try:
+        return abspath_path_executable(python_exe)
+    except FileNotFoundError:
+        return RuntimeError("Cannot find " + python_exe)
+
+
+def is_executable(path):
+    """
+    Check whether `path` is an executable file.
+    """
+    return pth.isfile(path) and os.access(path, os.X_OK)
+
+
+def abspath_path_executable(executable):
+    """
+    Discover absolute path of executable `executable` on system path.
+    """
+    for path in os.environ["PATH"].split(os.pathsep):
+        full_path = pth.join(path, executable)
+        if is_executable(full_path):
+            return full_path
+    raise FileNotFoundError(executable + " is not on current path")
