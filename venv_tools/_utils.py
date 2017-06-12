@@ -8,8 +8,10 @@ Useful internal functions
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
+from logging import getLogger
 import os
 import os.path as pth
+import subprocess
 import sys
 
 from ._venv_builders import VirtualenvBuilder
@@ -17,14 +19,16 @@ from ._venv_builders import VirtualenvBuilder
 BIN_DIR = "Scripts" if sys.platform == 'win32' else "bin"
 PYTHON_FILENAME = "python.exe" if sys.platform == 'win32' else "python"
 PYVENV_FILENAME = "pyvenv.cfg"
-ACTIVATE_FILENAMES = [
+ACTIVATE_FILENAMES = (
     "activate",
     "activate.csh",
     "activate.fish",
     "activate_this.py",
     "activate.bat",
     "activate.ps1",
-]
+)
+
+log = getLogger(__name__)
 
 
 def pathremove(dirname, path):
@@ -149,3 +153,35 @@ def abspath_path_executable(executable):
         if is_executable(full_path):
             return full_path
     raise FileNotFoundError(executable + " is not on current path")
+
+
+def run_python_with_args(
+    *, python_exe, args=None, module=None, code=None, script=None,
+    input=None,  # pylint: disable=redefined-builtin
+    stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=None
+):
+    """
+    Wrapper around subprocess.run for calling python interpreter.
+    """
+    if sum(1 for kw in (module, code, script) if kw is not None) != 1:
+        raise RuntimeError(
+            "One of module, code or script should be provided."
+        )
+
+    cmd_list = [python_exe]
+    if module is not None:
+        cmd_list.extend(['-m', module])
+    if code is not None:
+        cmd_list.extend(['-c', code])
+    if script is not None:
+        cmd_list.append(script)
+
+    if args is not None:
+        cmd_list.extend(args)
+
+    log.debug("Running command %s", cmd_list)
+
+    return subprocess.run(
+        cmd_list, input=input, stdin=stdin, stdout=stdout, stderr=stderr,
+        timeout=timeout, shell=False, universal_newlines=True, check=True
+    )

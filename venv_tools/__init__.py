@@ -8,6 +8,7 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :copyright: (c) 2014 by James Tocknell.
 :license: BSD, see LICENSE for more details.
 """
+from logging import getLogger
 import os
 import os.path
 import tempfile
@@ -18,7 +19,7 @@ import warnings
 
 from ._utils import (
     pathprepend, get_default_venv_builder, is_venv, BIN_DIR, PYTHON_FILENAME,
-    abspath_python_exe,
+    abspath_python_exe, run_python_with_args
 )
 
 from ._version import get_versions
@@ -27,6 +28,7 @@ del get_versions
 
 
 DEFAULT_INSTALL_COMMAND = "{python} -m pip install {package}"
+log = getLogger(__name__)
 
 
 class Venv(object):
@@ -77,6 +79,7 @@ class Venv(object):
             venv = self._venv_builder(**self._kwargs)
             venv.create(self.env_dir)
         pathprepend(os.path.join(self.env_dir, BIN_DIR), "PATH")
+        log.debug("PATH is now %s", os.environ["PATH"])
         if self._python_home is not None:
             os.environ.pop("PYTHONHOME")
         os.environ["VIRTUAL_ENV"] = self.env_dir
@@ -84,6 +87,7 @@ class Venv(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         os.environ["PATH"] = self._old_path
+        log.debug("PATH is now %s", os.environ["PATH"])
         if self._python_home is not None:
             os.environ["PYTHONHOME"] = self._python_home
         os.environ.pop("VIRTUAL_ENV")
@@ -116,32 +120,31 @@ class Venv(object):
     def install_command(self, new_cmd):
         self._install_command = new_cmd
 
-    def call_python_file(self, filename):
+    def call_python_file(self, filename, *args, **kwargs):
         """
         Call a python file with the python interpreter associated with this
         virtualenv.
         """
-        return subprocess.check_output(
-            [self.python_exe, filename], stderr=subprocess.STDOUT
+        return run_python_with_args(
+            python_exe=self.python_exe, script=filename, args=args, **kwargs
         )
 
-    def call_python_module(self, module_name, *args):
+    def call_python_module(self, module_name, *args, **kwargs):
         """
         Call a python module with the python interpreter associated with this
         virtualenv.
         """
-        return subprocess.check_output(
-            [self.python_exe, '-m', module_name].append(args),
-            stderr=subprocess.STDOUT
+        return run_python_with_args(
+            python_exe=self.python_exe, module=module_name, args=args, **kwargs
         )
 
-    def call_python_code(self, code):
+    def call_python_code(self, code, *args, **kwargs):
         """
         Call some python code with the python interpreter associated with this
         virtualenv.
         """
-        return subprocess.check_output(
-            [self.python_exe, '-c', code], stderr=subprocess.STDOUT
+        return run_python_with_args(
+            python_exe=self.python_exe, code=code, args=args, **kwargs
         )
 
     def install_package(self, package):
