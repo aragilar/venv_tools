@@ -27,7 +27,7 @@ __version__ = get_versions()['version']
 del get_versions
 
 
-DEFAULT_INSTALL_COMMAND = "{python} -m pip install {package}"
+DEFAULT_INSTALL_COMMAND = "{python} -m pip install '{package}'"
 log = getLogger(__name__)
 
 
