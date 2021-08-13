@@ -26,7 +26,7 @@ variables:
 jobs:
 - job: 'static_checks'
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
   variables:
     TOXENV: flake8,pylint,docs,doctest,check-manifest,checkreadme
   steps:
@@ -43,7 +43,7 @@ jobs:
 
 - job: 'ubuntu1604'
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
   strategy:
     matrix:
       py36:
