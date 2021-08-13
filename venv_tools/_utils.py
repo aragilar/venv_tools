@@ -75,10 +75,10 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
     """
     if path_to_python_exe:
         return VirtualenvBuilder
-    elif use_virtualenv:
+    if use_virtualenv:
         return VirtualenvBuilder
     try:
-        import venv
+        import venv  # pylint: disable=import-outside-toplevel
         if sys.version_info[0:2] == (3, 3):
             return VirtualenvBuilder
         return venv.EnvBuilder
@@ -89,6 +89,8 @@ def get_default_venv_builder(use_virtualenv, path_to_python_exe):
 def is_virtualenv(path):
     """
     Checks whether `path` is a virtualenv.
+
+    This function is somewhat redundant now that virtualenv uses venv
     """
     if pth.exists(pth.join(path, BIN_DIR, "python")):
         # we might have a virtualenv (/usr would pass the above test)
@@ -96,7 +98,7 @@ def is_virtualenv(path):
             pth.exists(pth.join(path, BIN_DIR, f))
             for f in ACTIVATE_FILENAMES
         )
-        if activate_exists and not is_pep_405_venv(path):
+        if activate_exists:
             return True
     return False
 
