@@ -11,4 +11,5 @@ include tox.ini
 exclude appveyor.yml
 exclude bors.toml
 exclude azure-pipelines.yml
+exclude codecov.yml
 recursive-exclude ci *
