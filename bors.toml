@@ -1,5 +1,5 @@
 status = [
-  "venv_tools.venv_tools",
+  "aragilar.venv_tools",
   "codecov/patch",
   "codecov/project",
 ]
