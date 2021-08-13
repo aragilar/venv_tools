@@ -9,3 +9,6 @@ recursive-include tests *.py
 include pylintrc
 include tox.ini
 exclude appveyor.yml
+exclude bors.toml
+exclude azure-pipelines.yml
+recursive-exclude ci *

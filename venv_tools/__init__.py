@@ -206,9 +206,8 @@ class TemporaryVenv(object):
         path_to_python_exe = abspath_python_exe(python_exe)
 
         self._kwargs = kwargs
-        self._venv_builder = (
-            venv_builder or
-            get_default_venv_builder(use_virtualenv, path_to_python_exe)
+        self._venv_builder = venv_builder or get_default_venv_builder(
+            use_virtualenv, path_to_python_exe,
         )
         self._path_to_python_exe = path_to_python_exe
         self.env_dir = None
