@@ -1,0 +1,6 @@
+status = [
+  "venv_tools.venv_tools",
+  "codecov/patch",
+  "codecov/project",
+]
+
