@@ -8,7 +8,8 @@ with open('README.rst') as f:
 setuptools.setup(
     name="venv_tools",
     version = versioneer.get_version(),
-    packages = setuptools.find_packages(),
+    packages = setuptools.find_packages('src'),
+    package_dir = {'': 'src'},
     install_requires = ["virtualenv"],
     author = "James Tocknell",
     author_email = "aragilar@gmail.com",
