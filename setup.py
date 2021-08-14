@@ -8,7 +8,8 @@ with open('README.rst') as f:
 setuptools.setup(
     name="venv_tools",
     version = versioneer.get_version(),
-    packages = setuptools.find_packages(),
+    packages = setuptools.find_packages('src'),
+    package_dir = {'': 'src'},
     install_requires = ["virtualenv"],
     author = "James Tocknell",
     author_email = "aragilar@gmail.com",
@@ -26,6 +27,9 @@ setuptools.setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     cmdclass=versioneer.get_cmdclass(),
 )
